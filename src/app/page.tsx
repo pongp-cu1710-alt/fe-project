@@ -23,7 +23,7 @@ export default async function Home() {
                 Explore Providers
               </Link>
               <Link href="/bookings" className="w-full sm:w-auto px-8 py-3 bg-white text-blue-600 border border-blue-200 rounded-xl font-medium hover:bg-blue-50 transition shadow-sm">
-                My Bookings
+                {session.user.role==='admin'?'All Bookings':'My Bookings'}
               </Link>
             </>
           ) : (
