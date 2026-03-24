@@ -10,8 +10,11 @@ export default function EditBookingPage({ params }: { params: Promise<{ id: stri
   const router = useRouter();
   
   const [bookingDate, setBookingDate] = useState("");
+  const [username, setUsername] = useState(""); 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const shortId = resolvedParams.id.slice(-8).toUpperCase();
 
   useEffect(() => {
     if (session?.user?.token) {
@@ -20,9 +23,20 @@ export default function EditBookingPage({ params }: { params: Promise<{ id: stri
       })
         .then((res) => res.json())
         .then((data) => {
-          if (data.data && data.data.bookingDate) {
-            const dateObj = new Date(data.data.bookingDate);
-            setBookingDate(dateObj.toISOString().split("T")[0]);
+          if (data.data) {
+            
+            if (data.data.bookingDate) {
+              const dateObj = new Date(data.data.bookingDate);
+              setBookingDate(dateObj.toISOString().split("T")[0]);
+            }
+
+            const userField = data.data.user;
+
+            if (typeof userField === "object" && userField !== null) {
+              setUsername(userField.name || userField.email || "Unknown User");
+            } else {
+              setUsername(session?.user?.name || "Unknown User");
+            }
           }
         });
     }
@@ -59,8 +73,25 @@ export default function EditBookingPage({ params }: { params: Promise<{ id: stri
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 font-sans">
       <div className="bg-white p-8 w-full max-w-lg rounded-2xl shadow-sm border border-slate-100">
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">Reschedule Booking</h1>
-        <p className="text-slate-600 mb-8">Update your pick-up date for this reservation.</p>
+        
+        <h1 className="text-3xl font-bold text-slate-900 mb-2">
+          Reschedule Booking
+        </h1>
+
+        <p className="text-sm text-slate-600 mb-1">
+          User:{" "}
+          <span className="font-semibold">
+            {username || session.user?.name || "Unknown User"}
+          </span>
+        </p>
+
+        <p className="text-sm text-slate-500 mb-1">
+          Booking Ref: <span className="font-mono font-semibold">#{shortId}</span>
+        </p>
+
+        <p className="text-slate-600 mb-8">
+          Update your pick-up date for this reservation.
+        </p>
 
         {error && <Alert severity="error" className="mb-6 font-sans">{error}</Alert>}
         {success && <Alert severity="success" className="mb-6 font-sans">{success}</Alert>}

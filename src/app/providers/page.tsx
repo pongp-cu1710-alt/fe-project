@@ -5,7 +5,7 @@ import ProviderCard from "../../components/ProviderCard";
 import { ProviderItem } from "../../interface";
 
 export default function ProvidersPage() {
-  const [providers, setProviders] = useState<ProviderItem[]>([]);
+  const [providers, setProviders] = useState<ProviderItem[] | null>(null);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
@@ -14,7 +14,7 @@ export default function ProvidersPage() {
       .then((data) => setProviders(data.data || []));
   }, []);
 
-  const filteredProviders = providers.filter((provider) =>
+  const filteredProviders = providers?.filter((provider) =>
     provider.name.toLowerCase().includes(search.toLowerCase()) ||
     provider.address.toLowerCase().includes(search.toLowerCase())
   );
@@ -42,7 +42,9 @@ export default function ProvidersPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredProviders.length > 0 ? (
+        {
+        filteredProviders? 
+        filteredProviders.length > 0 ? (
           filteredProviders.map((provider) => (
             <ProviderCard key={provider._id} provider={provider} />
           ))
@@ -52,7 +54,13 @@ export default function ProvidersPage() {
               No rental cars found matching your search.
             </p>
           </div>
-        )}
+        ):
+        <div className="col-span-full py-20 text-center">
+            <p className="text-lg text-slate-500 font-medium">
+              Loading
+            </p>
+          </div>
+        }
       </div>
     </div>
   );
